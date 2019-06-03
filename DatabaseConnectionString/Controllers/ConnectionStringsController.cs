@@ -5,36 +5,36 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DatabaseConnectionString.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/ConnectionStrings")]
     [ApiController]
     public class ConnectionStringsController : ControllerBase
     {
-        private IConnectionString connectinStringRepository;
+        private readonly IConnectionString connectionStringRepository;
 
         public ConnectionStringsController(IConnectionString aConnectionStringRepository)
         {
-            connectinStringRepository = aConnectionStringRepository;
+            connectionStringRepository = aConnectionStringRepository;
         }
 
         // GET: api/ConnectionStrings
         [HttpGet]
         public IEnumerable<ConnectionString> Get()
         {
-            return connectinStringRepository.GetConnectionStrings();
+            return connectionStringRepository.GetConnectionStrings();
         }
 
         // GET: api/ConnectionStrings/5
         [HttpGet("{id}", Name = "Get")]
         public IActionResult Get(int id)
         {
-            var connectionString = connectinStringRepository.GetConnectionString(id);
+            var connectionString = connectionStringRepository.GetConnectionString(id);
             return connectionString == null ? NotFound("Connection string not found") : (IActionResult)Ok(connectionString);
         }
 
         [HttpGet("Get{name}", Name = "GetEnv")]
         public IActionResult Get(string name)
         {
-            var connectionString = connectinStringRepository.GetConnectionString(name);
+            var connectionString = connectionStringRepository.GetConnectionString(name);
             return connectionString == null ? NotFound("Connection string not found") : (IActionResult)Ok(connectionString);
         }
 
@@ -47,7 +47,7 @@ namespace DatabaseConnectionString.Controllers
                 return BadRequest(ModelState);
             }
 
-            connectinStringRepository.UpdateConnectionString(connectionString);
+            connectionStringRepository.UpdateConnectionString(connectionString);
             return Ok("Connection string updated");
         }
 
