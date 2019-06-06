@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using DatabaseConnectionString.Models;
 using DatabaseConnectionString.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DatabaseConnectionString.Controllers
