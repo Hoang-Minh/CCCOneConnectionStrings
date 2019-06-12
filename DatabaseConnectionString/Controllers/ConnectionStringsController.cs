@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
 using DatabaseConnectionString.Models;
 using DatabaseConnectionString.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -8,6 +10,7 @@ namespace DatabaseConnectionString.Controllers
 {
     [Route("api/ConnectionStrings")]
     [ApiController]
+    [Authorize]
     public class ConnectionStringsController : ControllerBase
     {
         private readonly IConnectionString connectionStringRepository;
@@ -29,14 +32,14 @@ namespace DatabaseConnectionString.Controllers
         public IActionResult Get(int id)
         {
             var connectionString = connectionStringRepository.GetConnectionString(id);
-            return connectionString == null ? NotFound("Connection string not found") : (IActionResult)Ok(connectionString);
+            return connectionString == null ? NotFound("Record not found") : (IActionResult)Ok(connectionString);
         }
 
         [HttpGet("Get{name}", Name = "GetEnv")]
         public IActionResult Get(string name)
         {
             var connectionString = connectionStringRepository.GetConnectionString(name);
-            return connectionString == null ? NotFound("Connection string not found") : (IActionResult)Ok(connectionString);
+            return connectionString == null ? NotFound("Record not found") : (IActionResult)Ok(connectionString);
         }
 
         // POST: api/ConnectionStrings
@@ -48,20 +51,51 @@ namespace DatabaseConnectionString.Controllers
                 return BadRequest(ModelState);
             }
 
-            connectionStringRepository.UpdateConnectionString(connectionString);
-            return Ok("Connection string updated");
+            var userId = User.Claims.First(x => x.Type == ClaimTypes.NameIdentifier).Value;
+            connectionString.UserId = userId;
+
+            connectionStringRepository.AddConnectionString(connectionString);
+            return Ok("Record has been added");
         }
 
         // PUT: api/ConnectionStrings/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public IActionResult Put(int id, [FromBody] ConnectionString connectionString)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var connectionStringsInDb =
+                connectionStringRepository.GetConnectionString(id);
+            if (connectionStringsInDb == null) return BadRequest("Record not found");
+
+            //var userId = User.Claims.First(x => x.Type == ClaimTypes.NameIdentifier).Value;
+            //if (userId != connectionStringsInDb.UserId)
+            //    return BadRequest("You don't have permission to update this record");
+
+            connectionStringsInDb.EnvironmentName = connectionString.EnvironmentName;
+            connectionStringsInDb.Value = connectionString.Value;
+
+            connectionStringRepository.UpdateConnectionString(connectionStringsInDb);
+            return Ok("Record has been updated");
         }
 
         // DELETE: api/ApiWithActions/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IActionResult Delete(int id)
         {
+            var connectionStringsInDb =
+                connectionStringRepository.GetConnectionString(id);
+            if (connectionStringsInDb == null) return BadRequest("Record not found");
+
+            //var userId = User.Claims.First(x => x.Type == ClaimTypes.NameIdentifier).Value;
+            //if (userId != connectionStringsInDb.UserId)
+            //    return BadRequest("You don't have permission to update this record");
+
+            connectionStringRepository.DeleteConnectionString(connectionStringsInDb);
+            return Ok("Record has been removed");
         }
     }
 }

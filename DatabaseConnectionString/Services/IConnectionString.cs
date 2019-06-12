@@ -12,6 +12,8 @@ namespace DatabaseConnectionString.Services
         IEnumerable<ConnectionString> GetConnectionStrings();
         ConnectionString GetConnectionString(int id);
         ConnectionString GetConnectionString(string name);
+        void AddConnectionString(ConnectionString connectionString);
         void UpdateConnectionString(ConnectionString connectionString);
+        void DeleteConnectionString(ConnectionString connectionString);
     }
 }

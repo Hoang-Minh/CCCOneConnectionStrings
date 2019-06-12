@@ -26,8 +26,9 @@ namespace DatabaseConnectionString
             var domain = $"https://{Configuration["Auth0:Domain"]}/";
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-            services.AddDbContext<ConnectionStringsDbContext>(option => option.UseSqlServer(Configuration.GetConnectionString("LocalConnectionStringsDbContext")));
+            services.AddDbContext<ConnectionStringsDbContext>(option => option.UseSqlServer(Configuration.GetConnectionString("Azure")));
             services.AddScoped<IConnectionString, ConnectionStringRepository>();
+
             services.AddSwaggerGen(x =>
                 x.SwaggerDoc("v1", new Info {Title = "CCCOne Connection String API", Version = "v1"}));
 
@@ -44,7 +45,7 @@ namespace DatabaseConnectionString
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ConnectionStringsDbContext connectionStringDbContext)
         {
             if (env.IsDevelopment())
             {
@@ -61,8 +62,8 @@ namespace DatabaseConnectionString
             app.UseHttpsRedirection();
             // 2. Enable authentication middleware
             app.UseAuthentication();
-
             app.UseMvc();
+            connectionStringDbContext.Database.EnsureCreated();
         }
     }
 }

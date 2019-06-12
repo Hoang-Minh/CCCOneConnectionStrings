@@ -17,7 +17,7 @@ namespace DatabaseConnectionString.Services
 
         public ConnectionString GetConnectionString(int id)
         {
-            var connectionString = connectionStringDbContext.ConnectionStrings.SingleOrDefault(x => x.Id == id);
+            var connectionString = connectionStringDbContext.ConnectionStrings.Find(id);
             return connectionString;
         }
 
@@ -33,9 +33,21 @@ namespace DatabaseConnectionString.Services
             return connectionStringDbContext.ConnectionStrings;
         }
 
+        public void AddConnectionString(ConnectionString connectionString)
+        {
+            connectionStringDbContext.ConnectionStrings.Add(connectionString);
+            connectionStringDbContext.SaveChanges(true);
+        }
+
         public void UpdateConnectionString(ConnectionString connectionString)
         {
             connectionStringDbContext.ConnectionStrings.Update(connectionString);
+            connectionStringDbContext.SaveChanges(true);
+        }
+
+        public void DeleteConnectionString(ConnectionString connectionString)
+        {
+            connectionStringDbContext.ConnectionStrings.Remove(connectionString);
             connectionStringDbContext.SaveChanges(true);
         }
     }

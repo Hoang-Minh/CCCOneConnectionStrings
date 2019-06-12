@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
 
 namespace DatabaseConnectionString.Models
 {
@@ -9,5 +10,8 @@ namespace DatabaseConnectionString.Models
         public string EnvironmentName { get; set; }
         [Required]
         public string Value { get; set; }
+
+        [JsonIgnore]
+        public string UserId { get; set; }
     }
 }

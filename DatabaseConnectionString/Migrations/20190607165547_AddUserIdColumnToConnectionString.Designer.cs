@@ -3,14 +3,16 @@ using DatabaseConnectionString.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DatabaseConnectionString.Migrations
 {
     [DbContext(typeof(ConnectionStringsDbContext))]
-    partial class ConnectionStringsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190607165547_AddUserIdColumnToConnectionString")]
+    partial class AddUserIdColumnToConnectionString
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
